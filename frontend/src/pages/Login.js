@@ -52,24 +52,37 @@ function Login() {
   return (
     <Box sx={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
       {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: -2,
-        }}
-      >
-        <source src="/assets/movie-bg.mp4" type="video/mp4" />
-      </video>
+      {/* Video Background */}
+<Box
+  component="div"
+  sx={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: -2,
+    '@media (max-width: 768px)': {
+      display: 'none', // hide video on tablets & mobile
+    },
+  }}
+>
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    style={{
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    }}
+  >
+    <source src="/assets/movie-bg.mp4" type="video/mp4" />
+  </video>
+</Box>
+
 
       {/* Dark Overlay */}
       <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: -1 }} />
