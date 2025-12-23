@@ -2,6 +2,12 @@
 
 A full-stack web application for browsing and managing movies, built with the MERN stack (MongoDB, Express.js, React.js, Node.js).
 
+# Live Demo
+
+Frontend (Render): [https://movie-management-app-1-i58d.onrender.com/]
+Backend (Render): [https://movie-management-app-pqcy.onrender.com/health]
+GitHub Repository: [https://github.com/saifakhtar09/movie-management-app/tree/main]
+
 ## What This Project Does
 
 This is a movie database application where users can browse, search, and view movie details. Admins have additional features to add, edit, and delete movies. I've also integrated the OMDb API so admins can import movie data directly from IMDb instead of entering everything manually.
