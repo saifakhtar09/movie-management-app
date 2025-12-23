@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Please provide an email'],
-      unique: true, // ✅ creates the index (no duplicate warning)
+      unique: true, 
       lowercase: true,
       trim: true,
       match: [
@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// 🔐 Hash password before save
+//  Hash password before save
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
@@ -52,12 +52,12 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-// 🔑 Compare password
+// Compare password
 UserSchema.methods.comparePassword = function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
 
-// 🔐 Generate JWT
+//  Generate JWT
 UserSchema.methods.getSignedJwtToken = function () {
   return jwt.sign(
     { id: this._id, role: this.role },
@@ -66,7 +66,7 @@ UserSchema.methods.getSignedJwtToken = function () {
   );
 };
 
-// 👤 Public profile (safe response)
+//  Public profile (safe response)
 UserSchema.methods.getPublicProfile = function () {
   return {
     id: this._id,
