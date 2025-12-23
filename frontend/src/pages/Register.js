@@ -7,17 +7,14 @@ import {
   Typography,
   TextField,
   Button,
-  Alert,
   InputAdornment,
   IconButton,
   Divider,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Movie as MovieIcon,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff, Movie as MovieIcon } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -28,10 +25,9 @@ function Register() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
+  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -39,90 +35,55 @@ function Register() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
   };
 
   const validateForm = () => {
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all fields');
+      toast.error('Please fill in all fields');
       return false;
     }
-
     if (formData.name.length < 2) {
-      setError('Name must be at least 2 characters long');
+      toast.error('Name must be at least 2 characters long');
       return false;
     }
-
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
+      toast.error('Please enter a valid email address');
       return false;
     }
-
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      toast.error('Password must be at least 6 characters long');
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      toast.error('Passwords do not match');
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
-
     const { confirmPassword, ...userData } = formData;
-    const result = await register(userData);
+    const result = await registerUser(userData);
 
     if (result.success) {
+      toast.success('Account created successfully!');
       navigate('/');
     } else {
-      setError(result.error);
+      toast.error(result.error || 'Registration failed');
       setLoading(false);
     }
   };
 
   return (
     <Container component="main" maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={6}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          {/* Logo */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              mb: 2,
-            }}
-          >
+      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={6} sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <MovieIcon sx={{ fontSize: 40, color: 'primary.main' }} />
             <Typography component="h1" variant="h4" fontWeight="bold">
               MovieApp
@@ -136,14 +97,6 @@ function Register() {
             Sign up to start exploring movies
           </Typography>
 
-          {/* Error Alert */}
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          {/* Register Form */}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
             <TextField
               margin="normal"

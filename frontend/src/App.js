@@ -13,11 +13,14 @@ import AddMovie from './pages/AddMovie';
 import EditMovie from './pages/EditMovie';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
+       <ToastContainer position="top-right" autoClose={3000} />
       <Box component="main" sx={{ flexGrow: 1, pt: 3, pb: 6 }}>
         <Routes>
           {/* Public Routes */}
@@ -26,6 +29,7 @@ function App() {
           <Route path="/movies/:id" element={<MovieDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+         
 
           {/* Protected Routes */}
           <Route

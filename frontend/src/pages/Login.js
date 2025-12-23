@@ -7,17 +7,14 @@ import {
   Typography,
   TextField,
   Button,
-  Alert,
   InputAdornment,
   IconButton,
   Divider,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Movie as MovieIcon,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff, Movie as MovieIcon } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -25,7 +22,6 @@ function Login() {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -39,17 +35,15 @@ function Login() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     // Validation
     if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
+      toast.error('Please fill in all fields');
       setLoading(false);
       return;
     }
@@ -57,42 +51,19 @@ function Login() {
     const result = await login(formData);
 
     if (result.success) {
+      toast.success('Login successful!');
       navigate(from, { replace: true });
     } else {
-      setError(result.error);
+      toast.error(result.error || 'Invalid credentials');
       setLoading(false);
     }
   };
 
   return (
     <Container component="main" maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={6}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          {/* Logo */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              mb: 2,
-            }}
-          >
+      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={6} sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <MovieIcon sx={{ fontSize: 40, color: 'primary.main' }} />
             <Typography component="h1" variant="h4" fontWeight="bold">
               MovieApp
@@ -106,14 +77,6 @@ function Login() {
             Welcome back! Please login to your account.
           </Typography>
 
-          {/* Error Alert */}
-          {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          {/* Login Form */}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
             <TextField
               margin="normal"
@@ -182,15 +145,7 @@ function Login() {
               </Typography>
             </Box>
 
-            {/* Demo Credentials */}
-            <Box
-              sx={{
-                mt: 3,
-                p: 2,
-                bgcolor: 'background.default',
-                borderRadius: 1,
-              }}
-            >
+            <Box sx={{ mt: 3, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
               <Typography variant="caption" color="text.secondary" gutterBottom>
                 Demo Credentials:
               </Typography>

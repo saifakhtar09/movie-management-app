@@ -39,21 +39,9 @@ function Navbar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
   const handleLogout = () => {
     logout();
-    handleCloseUserMenu();
+    setAnchorElUser(null);
     navigate('/login');
   };
 
@@ -71,16 +59,16 @@ function Navbar() {
   }
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2, color: 'primary.main' }}>
+    <Box onClick={() => setMobileOpen(false)} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
         <MovieIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
         MovieApp
       </Typography>
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
             key={item.text}
+            button
             component={Link}
             to={item.path}
             sx={{ justifyContent: 'center' }}
@@ -96,157 +84,134 @@ function Navbar() {
   return (
     <AppBar position="sticky" elevation={4}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* Logo for desktop */}
-          <MovieIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
+        <Toolbar
+  disableGutters
+  sx={{
+    minHeight: 64,
+    display: 'flex',
+    justifyContent: 'space-between', // <-- make left and right spaced
+    alignItems: 'center',
+  }}
+>
+  {/* Left side: Menu icon + Logo */}
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    {isMobile && (
+      <IconButton
+        color="inherit"
+        onClick={() => setMobileOpen(true)}
+        sx={{ mr: 1 }}
+      >
+        <MenuIcon />
+      </IconButton>
+    )}
+
+    <Box
+      component={Link}
+      to="/"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        color: 'inherit',
+        textDecoration: 'none',
+      }}
+    >
+      <MovieIcon />
+      <Typography variant="h6" fontWeight={700}>
+        MovieApp
+      </Typography>
+    </Box>
+  </Box>
+
+  {/* Right side: Desktop menu or user/auth buttons */}
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    {!isMobile && (
+      <Box sx={{ flexGrow: 1, display: 'flex' }}>
+        {menuItems.map((item) => (
+          <Button
+            key={item.text}
             component={Link}
-            to="/"
+            to={item.path}
+            startIcon={item.icon}
             sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
+              color: 'white',
+              height: 64,
+              display: 'flex',
+              alignItems: 'center',
+              textTransform: 'none',
+              '& .MuiButton-startIcon': {
+                marginRight: 0.5,
+              },
             }}
           >
-            MovieApp
-          </Typography>
+            {item.text}
+          </Button>
+        ))}
+      </Box>
+    )}
 
-          {/* Mobile menu icon */}
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { md: 'none' } }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
+    {user ? (
+      <>
+        <Tooltip title="Account">
+          <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)}>
+            <Avatar sx={{ bgcolor: 'secondary.main' }}>
+              {user.name?.charAt(0).toUpperCase()}
+            </Avatar>
+          </IconButton>
+        </Tooltip>
+        <Menu
+          anchorEl={anchorElUser}
+          open={Boolean(anchorElUser)}
+          onClose={() => setAnchorElUser(null)}
+        >
+          <MenuItem disabled>
+            {user.name} ({user.role})
+          </MenuItem>
+          <MenuItem component={Link} to="/profile">
+            <AccountCircle sx={{ mr: 1 }} /> Profile
+          </MenuItem>
+          <MenuItem onClick={handleLogout}>
+            <ExitToApp sx={{ mr: 1 }} /> Logout
+          </MenuItem>
+        </Menu>
+      </>
+    ) : (
+      <Box sx={{ display: 'flex', gap: 1 }}>
+      <Button
+  component={Link}
+  to="/login"
+  color="inherit"
+  sx={{
+    border: '1px solid white',     
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      borderColor: 'white',                     
+    },
+    color: 'white',                
+    textTransform: 'none',
+  }}
+>
+  Login
+</Button>
 
-          {/* Logo for mobile */}
-          <MovieIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            MovieApp
-          </Typography>
+        <Button component={Link} to="/register" variant="contained" color="secondary">
+          Register
+        </Button>
+      </Box>
+    )}
+  </Box>
+</Toolbar>
 
-          {/* Desktop menu */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {menuItems.map((item) => (
-              <Button
-                key={item.text}
-                component={Link}
-                to={item.path}
-                startIcon={item.icon}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {item.text}
-              </Button>
-            ))}
-          </Box>
-
-          {/* User menu */}
-          <Box sx={{ flexGrow: 0 }}>
-            {user ? (
-              <>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                      {user.name?.charAt(0).toUpperCase()}
-                    </Avatar>
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem disabled>
-                    <Typography textAlign="center">
-                      {user.name} ({user.role})
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to="/profile"
-                    onClick={handleCloseUserMenu}
-                  >
-                    <AccountCircle sx={{ mr: 1 }} />
-                    Profile
-                  </MenuItem>
-                  <MenuItem onClick={handleLogout}>
-                    <ExitToApp sx={{ mr: 1 }} />
-                    Logout
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  component={Link}
-                  to="/login"
-                  variant="outlined"
-                  color="inherit"
-                >
-                  Login
-                </Button>
-                <Button
-                  component={Link}
-                  to="/register"
-                  variant="contained"
-                  color="secondary"
-                >
-                  Register
-                </Button>
-              </Box>
-            )}
-          </Box>
-        </Toolbar>
       </Container>
 
       {/* Mobile drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
+        onClose={() => setMobileOpen(false)}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: 240,
-            backgroundColor: 'background.paper',
-          },
+          '& .MuiDrawer-paper': { width: 240 },
         }}
       >
         {drawer}
