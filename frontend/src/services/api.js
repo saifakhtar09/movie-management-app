@@ -56,6 +56,8 @@ export const movieAPI = {
 
   getMovieById: (id) => 
     api.get(`/movies/${id}`),
+  getMovie: (id) =>
+    api.get(`/movies/${id}`),
   createMovie: (movieData) => 
     api.post('/movies', movieData),
   updateMovie: (id, movieData) => 

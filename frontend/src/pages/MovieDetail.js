@@ -46,7 +46,8 @@ function MovieDetail() {
     try {
       setLoading(true);
       setError(null);
-      const response = await movieAPI.getMovie(id);
+     const response = await movieAPI.getMovieById(id);
+
       setMovie(response.data.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch movie details');
