@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -16,75 +17,83 @@ connectDB();
 
 const app = express();
 
-// Security middleware
+// Security Middleware 
 app.use(helmet());
 
-// CORS configuration
+// CORS
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  credentials: true,
 }));
 
-// Body parser middleware
+// Body Parser 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Compression middleware
+//  Compression 
 app.use(compression());
 
-// Logging middleware
+// Logging 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
-  app.use(morgan('combined'));
+  app.use(morgan('combined')); 
 }
 
-// Rate limiting
+ Rate Limiting 
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  windowMs: process.env.NODE_ENV === 'production' ? 60 * 60 * 1000 : 15 * 60 * 1000, // 1hr in prod
+  max: process.env.NODE_ENV === 'production' ? 1000 : 100,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
-
 app.use('/api/', limiter);
 
-// Health check endpoint
+// Health Check 
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Server is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
-// API Routes
+//  API Routes 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/movies', require('./routes/movieRoutes'));
 
-// 404 Handler
+//  Serve Frontend in Production 
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
+
+//  404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
-    message: `Route ${req.originalUrl} not found`
+    message: `Route ${req.originalUrl} not found`,
   });
 });
 
-// Error handler middleware (must be last)
+// Error Handler 
 app.use(errorHandler);
 
+//  Start Server 
 const PORT = process.env.PORT || 5000;
-
 const server = app.listen(PORT, () => {
   console.log(`
-    ╔════════════════════════════════════════════════╗
-    ║   Movie App Server Running                     ║
-    ║   Environment: ${process.env.NODE_ENV?.padEnd(32) || 'development'.padEnd(32)}║
-    ║   Port: ${String(PORT).padEnd(39)}║
-    ║   MongoDB: Connected                           ║
-    ╚════════════════════════════════════════════════╝
-  `);
+----------------------------------------
+     Movie App Server Running
+     Environment: ${process.env.NODE_ENV?.padEnd(32) || 'development'.padEnd(32)}
+     Port: ${String(PORT).padEnd(39)}
+     MongoDB: Connected
+----------------------------------------
+`);
 });
 
 // Handle unhandled promise rejections
@@ -99,7 +108,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// Graceful shutdown
+// Handle SIGTERM (used by Heroku / Docker / Kubernetes)
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {

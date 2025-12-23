@@ -45,7 +45,8 @@ function EditMovie() {
 
   const fetchMovie = async () => {
     try {
-      const response = await movieAPI.getMovie(id);
+     const response = await movieAPI.getMovieById(id);
+
       const movie = response.data.data;
       
       setFormData({

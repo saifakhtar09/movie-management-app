@@ -73,7 +73,7 @@ exports.authorize = (...roles) => {
   };
 };
 
-// Optional authentication - doesn't fail if no token
+// doesn't fail if no token
 exports.optionalAuth = async (req, res, next) => {
   let token;
 

@@ -22,7 +22,7 @@ router.get('/stats', getMovieStats);
 router.get('/:id', getMovie);
 
 // Protected routes (Admin only)
-router.post('/import', protect, authorize('admin'), importMovie);  // Add this BEFORE other POST routes
+router.post('/import', protect, authorize('admin'), importMovie); 
 router.post('/', protect, authorize('admin'), createMovie);
 router.put('/:id', protect, authorize('admin'), updateMovie);
 router.delete('/:id', protect, authorize('admin'), deleteMovie);

@@ -53,7 +53,8 @@ function Register() {
       return false;
     }
 
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address');
       return false;
