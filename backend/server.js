@@ -21,10 +21,29 @@ const app = express();
 app.use(helmet());
 
 // CORS
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-}));
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',')
+  : [];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow server-to-server requests, Postman, health checks
+      if (!origin) return callback(null, true);
+
+      // Backend-only phase: allow all origins TEMPORARILY
+      if (allowedOrigins.length === 0) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
+
 
 // Body Parser 
 app.use(express.json({ limit: '10mb' }));
