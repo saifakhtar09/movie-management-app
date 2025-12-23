@@ -241,6 +241,3 @@ movie-app/
 
 This project demonstrates my ability to build a full-stack web application with user authentication, role-based access control, third-party API integration, and a responsive user interface. All the features work as intended and the code is organized following best practices.
 
----
-
-**Note:** This project was built as an assignment to demonstrate full-stack development skills using the MERN stack.

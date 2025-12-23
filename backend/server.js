@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined')); 
 }
 
- Rate Limiting 
+ // Rate Limiting
 const limiter = rateLimit({
   windowMs: process.env.NODE_ENV === 'production' ? 60 * 60 * 1000 : 15 * 60 * 1000, // 1hr in prod
   max: process.env.NODE_ENV === 'production' ? 1000 : 100,

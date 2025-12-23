@@ -32,10 +32,10 @@ const movieTitles = [
 const seedDatabase = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("✅ MongoDB Connected");
+    console.log("MongoDB Connected");
 
     await Movie.deleteMany();
-    console.log("🧹 Existing movies cleared");
+    console.log(" Existing movies cleared");
 
     // Create / Find admin
     let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
@@ -47,7 +47,7 @@ const seedDatabase = async () => {
         password: process.env.ADMIN_PASSWORD || "Admin@123456",
         role: "admin"
       });
-      console.log("👑 Admin user created");
+      console.log(" Admin user created");
     }
 
     const movies = [];
@@ -76,7 +76,7 @@ const seedDatabase = async () => {
     }
 
     await Movie.insertMany(movies);
-    console.log(`✅ ${movies.length} movies seeded from OMDb`);
+    console.log(` ${movies.length} movies seeded from OMDb`);
 
     console.log("\nAdmin Login:");
     console.log("Email:", adminUser.email);
